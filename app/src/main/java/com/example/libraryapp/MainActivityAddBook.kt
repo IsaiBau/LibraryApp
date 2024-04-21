@@ -2,6 +2,7 @@ package com.example.libraryapp
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,7 +12,13 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import java.io.File
+import android.Manifest
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+
 
 class MainActivityAddBook : AppCompatActivity() {
     private lateinit var dbHelper: DbHelper
@@ -25,6 +32,12 @@ class MainActivityAddBook : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_add_book)
         dbHelper = DbHelper(this)
+/*
+        if(checkPermission()) {
+            Toast.makeText(this, "Permiso Aceptado", Toast.LENGTH_LONG)
+        } else {
+            requestPermissions()
+        }*/
 
         val imageButton = findViewById<ImageButton>(R.id.imgButton)
 
@@ -67,12 +80,22 @@ class MainActivityAddBook : AppCompatActivity() {
 
 
         if (requestCode == PICK_PDF_REQUEST && resultCode == Activity.RESULT_OK && data != null && data.data != null) {
+            Log.d("MainActivityAddBook", "URI del archivo seleccionado: ${data.data}")
+            //esta uri es  content://com.android.providers.media.documents/document/document%3A358711
+            //este es el bueno te quiero mucho, esto fue frustrante, sigo frustrada
+            //pero quiero aprovechar para decirte que te quiero un montoooon
+            //resulta que no vi que habia salto de linea  y pense que estaba completo, me tarde toda la noche porque quise solo poe no leer aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
             val selectedFileUri = data.data
+
             val selectedFilePath: String = selectedFileUri?.let { getPath(it) } ?: ""
             Log.d("MainActivityAddBook", "Ruta del archivo seleccionado: $selectedFilePath")
-
+            //esta solo es el nombre: Documento A4 Catálogo tienda de ropa minimalista gris y blanco.pdf
             // Verificar si el archivo seleccionado existe antes de intentar copiarlo
             val selectedFile = File(selectedFilePath)
+            val selectedFilePath1: String = selectedFile.absolutePath
+
+            Log.d("MainActivityAddBook", "Rutaabsoluraarchivo seleccionado: $selectedFilePath1")
+            //mas de lo mismo /Documento A4 Catálogo tienda de ropa minimalista gris y blanco.pdf
             if (!selectedFile.exists()) {
                 Toast.makeText(this, "El archivo seleccionado no existe", Toast.LENGTH_SHORT).show()
                 return
@@ -83,7 +106,7 @@ class MainActivityAddBook : AppCompatActivity() {
             // Luego, puedes mover el archivo a una ubicación de tu elección
             // (por ejemplo, al directorio de almacenamiento interno o externo de tu aplicación)
             // Esto es solo un ejemplo básico:
-            val destination = File(filesDir, "nombre_archivo.pdf")
+            val destination = File(filesDir, selectedFilePath)
             file.copyTo(destination, overwrite = true)
 
             // Guarda la ruta del archivo en la base de datos
@@ -95,20 +118,35 @@ class MainActivityAddBook : AppCompatActivity() {
             if (idLibro != -1L) {
                 Toast.makeText(this, "Libro guardado exitosamente!", Toast.LENGTH_SHORT).show()
                 // Aquí puedes hacer cualquier otra acción necesaria después de guardar el libro
+                Log.d("MainActivityAddBook", "se pudo")
             } else {
                 Toast.makeText(this, "Error al guardar el libro", Toast.LENGTH_SHORT).show()
+                Log.d("MainActivityAddBook", "error")
             }
         }
     }
 
     private fun getPath(uri: Uri): String {
+        Log.d("MainActivityAddBook", "URI recibida en getPath: $uri")
+        //aqui fue donde me di ceunt aque estaba cortada la ruta y si estaba bein xddddd
+        // content://com.android.providers.media.documents/document/document%3A358711
         var filePath = ""
-        if (uri.scheme == "content") {
+
+        val scheme = uri.scheme
+        if (scheme == "file") {
+            var filePath: String? = null
+            filePath = uri.path
+            Log.d("MainActivityAddBook", "filepath recibida en getPath: $filePath")
+            //este no imprime nada puedes quitarlo
+        } else if (uri.scheme == "content") {
             val cursor = contentResolver.query(uri, null, null, null, null)
             cursor?.use { cursor ->
                 if (cursor.moveToFirst()) {
                     val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DISPLAY_NAME)
                     filePath = cursor.getString(columnIndex)
+                    Log.d("MainActivityAddBook", "filepath del cursor recibida en getPath: $filePath")
+                    //imprime solo nombre, no sirve este
+                    //Documento A4 Catálogo tienda de ropa minimalista gris y blanco.pdf
                 }
             }
         } else {
@@ -116,6 +154,37 @@ class MainActivityAddBook : AppCompatActivity() {
         }
         return filePath
     }
+/*
+    private fun checkPermission(): Boolean {
+        val permission1 = ContextCompat.checkSelfPermission(applicationContext, WRITE_EXTERNAL_STORAGE)
+        val permission2 = ContextCompat.checkSelfPermission(applicationContext, READ_EXTERNAL_STORAGE)
+        return permission1 == PackageManager.PERMISSION_GRANTED && permission2 == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestPermissions() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE),
+            200
+        )
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == 200) {
+            if(grantResults.size > 0) {
+                val writeStorage = grantResults[0] == PackageManager.PERMISSION_GRANTED
+                val readStorage = grantResults[1] == PackageManager.PERMISSION_GRANTED
+
+                if(writeStorage && readStorage) {
+                    Toast.makeText(this, "Permisos concedidos", Toast.LENGTH_LONG)
+                } else {
+                    Toast.makeText(this, "Permisos rechazados", Toast.LENGTH_LONG)
+                    finish()
+                }
+            }
+        }
+    }*/
 }
 
 
