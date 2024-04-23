@@ -18,6 +18,8 @@ import java.io.File
 import android.Manifest
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 
 
 class MainActivityAddBook : AppCompatActivity() {
@@ -26,19 +28,22 @@ class MainActivityAddBook : AppCompatActivity() {
     private lateinit var categoria: String
     private lateinit var nombreLibro: String
     private lateinit var sinopsis: String
+    private var selectedFileUri: Uri? = null
     private var userId: Long = -1L // Asigna un valor predeterminado al userId
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_add_book)
         dbHelper = DbHelper(this)
-/*
-        if(checkPermission()) {
-            Toast.makeText(this, "Permiso Aceptado", Toast.LENGTH_LONG)
-        } else {
-            requestPermissions()
-        }*/
 
+        val categorias = listOf("Ficción", "No ficción", "Ciencia ficción", "Romance", "Misterio", "Aventura", "Fantasía")
+        val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.textViewCategoria)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, categorias)
+        autoCompleteTextView.setAdapter(adapter)
+        val usu = intent.getIntExtra("ID_USUARIO", -1)
+        Log.d("MainActivity", "se pudo: $usu")
+        val usu3 = intent.getIntExtra("usu", -1)
+        Log.d("MainActivity", "se pudo: $usu3")
         val imageButton = findViewById<ImageButton>(R.id.imgButton)
 
         imageButton.setOnClickListener {
@@ -54,6 +59,8 @@ class MainActivityAddBook : AppCompatActivity() {
         // Configurar el clic del botón de guardar
         buttonSave.setOnClickListener {
             // Obtener los datos del formulario
+            Log.d("MainActivity", "se pudo: $usu")
+            val usu2 = usu.toLong()
             val categoria1 = findViewById<TextView>(R.id.textViewCategoria)
             val nombreLibro1 = findViewById<TextView>(R.id.nombreLibro)
             val sinopsis1 = findViewById<TextView>(R.id.sinopsis)
@@ -64,13 +71,24 @@ class MainActivityAddBook : AppCompatActivity() {
 
             // Suponiendo que ya tienes el ID del usuario que está subiendo el libro
             userId = intent.getLongExtra("USER_ID", -1L)
-
+            Log.d("id", "id: $userId")
             // Verificar si algún campo está vacío
             if (categoria.isEmpty() || nombreLibro.isEmpty() || sinopsis.isEmpty()) {
                 Toast.makeText(this, "Por favor ingresa todos los campos", Toast.LENGTH_SHORT)
                     .show()
             } else {
-                // Aquí no necesitas llamar a insertLibro, ya que lo harás en onActivityResult
+                val uri = selectedFileUri.toString()
+                val idLibro = dbHelper.insertLibro(categoria, nombreLibro, sinopsis, usu2,uri)
+
+                // Muestra un mensaje de confirmación
+                if (idLibro != -1L) {
+                    Toast.makeText(this, "Libro guardado exitosamente!", Toast.LENGTH_SHORT).show()
+                    // Aquí puedes hacer cualquier otra acción necesaria después de guardar el libro
+                    Log.d("MainActivityAddBook", "se pudo")
+                } else {
+                    Toast.makeText(this, "Error al guardar el libro", Toast.LENGTH_SHORT).show()
+                    Log.d("MainActivityAddBook", "error")
+                }
             }
         }
     }
@@ -85,7 +103,7 @@ class MainActivityAddBook : AppCompatActivity() {
             //este es el bueno te quiero mucho, esto fue frustrante, sigo frustrada
             //pero quiero aprovechar para decirte que te quiero un montoooon
             //resulta que no vi que habia salto de linea  y pense que estaba completo, me tarde toda la noche porque quise solo poe no leer aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            val selectedFileUri = data.data
+            selectedFileUri = data.data
 
             val selectedFilePath: String = selectedFileUri?.let { getPath(it) } ?: ""
             Log.d("MainActivityAddBook", "Ruta del archivo seleccionado: $selectedFilePath")
@@ -106,23 +124,18 @@ class MainActivityAddBook : AppCompatActivity() {
             // Luego, puedes mover el archivo a una ubicación de tu elección
             // (por ejemplo, al directorio de almacenamiento interno o externo de tu aplicación)
             // Esto es solo un ejemplo básico:
+
             val destination = File(filesDir, selectedFilePath)
+            if (!destination.exists()) {
+                destination.mkdirs() // Crea el directorio y sus subdirectorios si no existen
+            }
+
             file.copyTo(destination, overwrite = true)
 
             // Guarda la ruta del archivo en la base de datos
             val filePathInDatabase = destination.absolutePath
             // Aquí debes modificar tu método de inserción de libro para que también acepte la ruta del archivo
-            val idLibro = dbHelper.insertLibro(categoria, nombreLibro, sinopsis, userId, filePathInDatabase)
 
-            // Muestra un mensaje de confirmación
-            if (idLibro != -1L) {
-                Toast.makeText(this, "Libro guardado exitosamente!", Toast.LENGTH_SHORT).show()
-                // Aquí puedes hacer cualquier otra acción necesaria después de guardar el libro
-                Log.d("MainActivityAddBook", "se pudo")
-            } else {
-                Toast.makeText(this, "Error al guardar el libro", Toast.LENGTH_SHORT).show()
-                Log.d("MainActivityAddBook", "error")
-            }
         }
     }
 

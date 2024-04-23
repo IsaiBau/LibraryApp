@@ -3,6 +3,8 @@ package com.example.libraryapp
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.service.autofill.UserData
+import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import com.example.libraryapp.R.id.buttonLoginRegister
@@ -27,9 +29,19 @@ class MainActivityLogin : AppCompatActivity() {
 
             val userId = dbHelper.leerusuario(username, password)
             if (userId != -1L) {
+                val idUsuario = dbHelper.obtenerIdUsuario(username, password)
+                val preferences = getSharedPreferences("user_data", MODE_PRIVATE)
+                val editor = preferences.edit()
+                editor.putInt("user_id", idUsuario)
+                editor.apply()
+                Log.d("MainActivity", "ID de usuario: $idUsuario")
+                guardarEstadoSesion(true, idUsuario)
+
                 // Inicio de sesión exitoso, ahora puedes pasar el ID del usuario a la actividad principal
-                val intent = Intent(this, MainActivity::class.java)
-                intent.putExtra("USER_ID", userId)
+                val intent = Intent(this, MainActivity::class.java).apply {
+                    putExtra("ID_USUARIO", idUsuario)
+                    Log.d("MainActivity", "ID de usuario: $idUsuario")
+                }
                 startActivity(intent)
                 finish()
             } else {
@@ -42,5 +54,17 @@ class MainActivityLogin : AppCompatActivity() {
             val intent = Intent(this, MainActivityRegister::class.java)
             startActivity(intent)
         }
+    }
+    private fun sesionIniciada(): Boolean {
+        val preferences = getSharedPreferences("sesion", MODE_PRIVATE)
+        return preferences.getBoolean("sesionIniciada", false)
+    }
+
+    private fun guardarEstadoSesion(esSesionIniciada: Boolean, idUsuario: Int) {
+        val preferences = getSharedPreferences("sesion", MODE_PRIVATE)
+        val editor = preferences.edit()
+        editor.putBoolean("sesionIniciada", esSesionIniciada)
+        editor.putInt("idUsuario", idUsuario)
+        editor.apply()
     }
 }
