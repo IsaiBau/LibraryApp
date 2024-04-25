@@ -20,6 +20,7 @@ class DbHelper(private val context: Context) : SQLiteOpenHelper(context, DBNAME,
                         "categoria TEXT, " +
                         "nombre TEXT, " +
                         "sinopsis TEXT, " +
+                        "file_path TEXT, " +
                         "user_id INTEGER, " +
                         "FOREIGN KEY(user_id) REFERENCES USERS(id))"
                 )
@@ -94,7 +95,18 @@ class DbHelper(private val context: Context) : SQLiteOpenHelper(context, DBNAME,
 
         return writableDatabase.update("USERS", values, whereClause, whereArgs)
     }
-
+    fun obtenerIdUsuario(username: String, password: String): Int {
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT id FROM USERS WHERE usuario = ? AND password = ?", arrayOf(username, password))
+        return if (cursor.moveToFirst()) {
+            val idUsuario = cursor.getInt(0)
+            cursor.close()
+            idUsuario
+        } else {
+            cursor.close()
+            -1
+        }
+    }
     fun insertLibro(
         categoria: String,
         nombreLibro: String,

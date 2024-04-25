@@ -17,5 +17,10 @@ class MainActivityDetailBook : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
+        val ver = findViewById<ImageButton>(R.id.ver)
+        ver.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

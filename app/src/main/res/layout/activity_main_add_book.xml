@@ -125,6 +125,7 @@
                 android:textColor="@color/secondary"
                 android:textColorHint="@color/secondary"
                 android:textSize="6pt" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
 
