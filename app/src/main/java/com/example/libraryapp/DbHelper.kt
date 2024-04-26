@@ -10,7 +10,7 @@ class DbHelper(private val context: Context) : SQLiteOpenHelper(context, DBNAME,
 
     companion object {
         private const val DBNAME = "App.db"
-        private const val DB_VERSION = 1
+        private const val DB_VERSION = 2
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -121,11 +121,50 @@ class DbHelper(private val context: Context) : SQLiteOpenHelper(context, DBNAME,
             put("user_id", userId)
             put("file_path", filePath)
         }
-        return writableDatabase.insert("LIBROS", null, values)
+        val libroId = writableDatabase.insert("LIBROS", null, values)
+        // Devolver el ID del libro insertado
+        return libroId
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         // No se realiza ninguna acción específica en este momento
         // Puedes dejar este método vacío o agregar código de actualización del esquema de la base de datos aquí si es necesario.
+    }
+
+    data class Libro(
+        val id: Long,
+        val categoria: String,
+        val nombre: String,
+        val sinopsis: String,
+        val filePath: String,
+        val userId: Long
+    )
+
+    fun obtenerDetallesLibro(libroId: Long): Libro? {
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM LIBROS WHERE id = ?", arrayOf(libroId.toString()))
+        return if (cursor.moveToFirst()) {
+            val categoriaIndex = cursor.getColumnIndex("categoria")
+            val nombreIndex = cursor.getColumnIndex("nombre")
+            val sinopsisIndex = cursor.getColumnIndex("sinopsis")
+            val filePathIndex = cursor.getColumnIndex("file_path")
+            val userIdIndex = cursor.getColumnIndex("user_id")
+
+            if (categoriaIndex == -1 || nombreIndex == -1 || sinopsisIndex == -1 || filePathIndex == -1 || userIdIndex == -1) {
+                cursor.close()
+                throw IllegalArgumentException("Columna no encontrada en los resultados de la consulta SQL.")
+            }
+
+            val categoria = cursor.getString(categoriaIndex)
+            val nombre = cursor.getString(nombreIndex)
+            val sinopsis = cursor.getString(sinopsisIndex)
+            val filePath = cursor.getString(filePathIndex)
+            val userId = cursor.getLong(userIdIndex)
+            cursor.close()
+            Libro(libroId, categoria, nombre, sinopsis, filePath, userId)
+        } else {
+            cursor.close()
+            null
+        }
     }
 }
