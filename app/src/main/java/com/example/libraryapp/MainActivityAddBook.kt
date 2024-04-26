@@ -20,6 +20,7 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.EditText
 
 
 class MainActivityAddBook : AppCompatActivity() {
@@ -28,6 +29,7 @@ class MainActivityAddBook : AppCompatActivity() {
     private lateinit var categoria: String
     private lateinit var nombreLibro: String
     private lateinit var sinopsis: String
+    private lateinit var url: String
     private var selectedFileUri: Uri? = null
     private var userId: Long = -1L // Asigna un valor predeterminado al userId
 
@@ -36,7 +38,7 @@ class MainActivityAddBook : AppCompatActivity() {
         setContentView(R.layout.activity_main_add_book)
         dbHelper = DbHelper(this)
 
-        val categorias = listOf("Ficción", "No ficción", "Ciencia ficción", "Romance", "Misterio", "Aventura", "Fantasía")
+        val categorias = listOf("Comedia", "Romance", "Drama", "Acción")
         val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.textViewCategoria)
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, categorias)
         autoCompleteTextView.setAdapter(adapter)
@@ -44,16 +46,16 @@ class MainActivityAddBook : AppCompatActivity() {
         Log.d("MainActivity", "se pudo: $usu")
         val usu3 = intent.getIntExtra("usu", -1)
         Log.d("MainActivity", "se pudo: $usu3")
-        val imageButton = findViewById<ImageButton>(R.id.imgButton)
 
-        imageButton.setOnClickListener {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "application/pdf"
-            startActivityForResult(
-                Intent.createChooser(intent, "Seleccionar archivo PDF"),
-                PICK_PDF_REQUEST
-            )
-        }
+
+        //imageButton.setOnClickListener {
+        //    val intent = Intent(Intent.ACTION_GET_CONTENT)
+        //    intent.type = "application/pdf"
+        //    startActivityForResult(
+        //        Intent.createChooser(intent, "Seleccionar archivo PDF"),
+        //        PICK_PDF_REQUEST
+        //    )
+        //}
 
         val buttonSave = findViewById<Button>(R.id.buttonSave)
         // Configurar el clic del botón de guardar
@@ -64,11 +66,12 @@ class MainActivityAddBook : AppCompatActivity() {
             val categoria1 = findViewById<TextView>(R.id.textViewCategoria)
             val nombreLibro1 = findViewById<TextView>(R.id.nombreLibro)
             val sinopsis1 = findViewById<TextView>(R.id.sinopsis)
+            val imageButton = findViewById<EditText>(R.id.imgButton)
 
             categoria = categoria1.text.toString()
             nombreLibro = nombreLibro1.text.toString()
             sinopsis = sinopsis1.text.toString()
-
+            url = imageButton.text.toString()
             // Suponiendo que ya tienes el ID del usuario que está subiendo el libro
             userId = intent.getLongExtra("USER_ID", -1L)
             Log.d("id", "id: $userId")
@@ -78,13 +81,16 @@ class MainActivityAddBook : AppCompatActivity() {
                     .show()
             } else {
                 val uri = selectedFileUri.toString()
-                val idLibro = dbHelper.insertLibro(categoria, nombreLibro, sinopsis, usu2,uri)
+                val idLibro = dbHelper.insertLibro(categoria, nombreLibro, sinopsis, usu2,url)
 
                 // Muestra un mensaje de confirmación
                 if (idLibro != -1L) {
                     Toast.makeText(this, "Libro guardado exitosamente!", Toast.LENGTH_SHORT).show()
                     // Aquí puedes hacer cualquier otra acción necesaria después de guardar el libro
                     Log.d("MainActivityAddBook", "se pudo")
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
                 } else {
                     Toast.makeText(this, "Error al guardar el libro", Toast.LENGTH_SHORT).show()
                     Log.d("MainActivityAddBook", "error")
@@ -112,12 +118,6 @@ class MainActivityAddBook : AppCompatActivity() {
             val selectedFile = File(selectedFilePath)
             val selectedFilePath1: String = selectedFile.absolutePath
 
-            Log.d("MainActivityAddBook", "Rutaabsoluraarchivo seleccionado: $selectedFilePath1")
-            //mas de lo mismo /Documento A4 Catálogo tienda de ropa minimalista gris y blanco.pdf
-            if (!selectedFile.exists()) {
-                Toast.makeText(this, "El archivo seleccionado no existe", Toast.LENGTH_SHORT).show()
-                return
-            }
 
             // Aquí guardas el archivo PDF en el sistema de archivos
             val file = File(selectedFilePath)

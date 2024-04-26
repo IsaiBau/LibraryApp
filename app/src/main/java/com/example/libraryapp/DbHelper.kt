@@ -107,6 +107,20 @@ class DbHelper(private val context: Context) : SQLiteOpenHelper(context, DBNAME,
             -1
         }
     }
+    fun getLibrosByUserId(userId: Long): Cursor? {
+        val db = readableDatabase
+        return db.rawQuery("SELECT * FROM LIBROS WHERE user_id = ?", arrayOf(userId.toString()))
+    }
+    fun getUltimoLibroAñadidoPorUsuario(userId: Long): Cursor? {
+        val db = readableDatabase
+        return db.rawQuery("SELECT * FROM LIBROS WHERE user_id = ? ORDER BY id DESC LIMIT 1", arrayOf(userId.toString()))
+    }
+    fun getLibroPorId(userId: Long, libroId: Long): Cursor? {
+        val db = readableDatabase
+        return db.rawQuery("SELECT id, categoria, nombre, sinopsis, file_path FROM LIBROS WHERE user_id = ? AND id = ?", arrayOf(userId.toString(), libroId.toString()))
+    }
+
+
     fun insertLibro(
         categoria: String,
         nombreLibro: String,

@@ -15,7 +15,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" >
-
+<!--
         <Button
             android:id="@+id/button"
             android:layout_width="wrap_content"
@@ -24,7 +24,8 @@
             android:layout_alignParentBottom="true"
             android:layout_marginEnd="72dp"
             android:layout_marginBottom="298dp"
-            android:text="Button" />
+            android:text="Button" />-->
+
     </com.github.barteksc.pdfviewer.PDFView>
 
   </androidx.constraintlayout.widget.ConstraintLayout>
