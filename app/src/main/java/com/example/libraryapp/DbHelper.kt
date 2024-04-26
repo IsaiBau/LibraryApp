@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 
 class DbHelper(private val context: Context) : SQLiteOpenHelper(context, DBNAME, null, DB_VERSION) {
 
@@ -107,10 +108,22 @@ class DbHelper(private val context: Context) : SQLiteOpenHelper(context, DBNAME,
             -1
         }
     }
-    fun getLibrosByUserId(userId: Long): Cursor? {
+    fun getAllBooks(userId: Long): Cursor? {
         val db = readableDatabase
         return db.rawQuery("SELECT * FROM LIBROS WHERE user_id = ?", arrayOf(userId.toString()))
     }
+    fun deleteBook(libroId: Long) {
+        val db = writableDatabase
+        val deletedRows = db.delete("LIBROS", "id = ?", arrayOf(libroId.toString()))
+        if (deletedRows > 0) {
+            Log.d("DbHelper", "Libro eliminado exitosamente")
+            // Aquí puedes mostrar un mensaje de éxito o realizar alguna otra acción después de eliminar el libro
+        } else {
+            Log.d("DbHelper", "No se pudo eliminar el libro")
+            // Aquí puedes mostrar un mensaje de error o realizar alguna otra acción si no se pudo eliminar el libro
+        }
+    }
+
     fun getUltimoLibroAñadidoPorUsuario(userId: Long): Cursor? {
         val db = readableDatabase
         return db.rawQuery("SELECT * FROM LIBROS WHERE user_id = ? ORDER BY id DESC LIMIT 1", arrayOf(userId.toString()))
