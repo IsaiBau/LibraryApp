@@ -116,7 +116,6 @@
 
         <TextView
             android:id="@+id/libroTitulo"
-            android:textColor="@color/black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
@@ -124,6 +123,7 @@
             android:layout_marginBottom="50dp"
             android:fontFamily="@font/montserrat_bold"
             android:text="El Libro Troll - ElRubiusOMG"
+            android:textColor="@color/black"
             android:textSize="13dp"></TextView>
 
         <TextView
@@ -168,134 +168,15 @@
 
     </androidx.cardview.widget.CardView>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView3"
-        android:layout_width="350dp"
-        android:layout_height="240dp"
-        android:backgroundTint="@color/white"
-        android:paddingTop="10dp"
-        app:cardCornerRadius="10dp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewMain"
+        android:layout_width="409dp"
+        android:layout_height="314dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.557"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView"
-        app:layout_constraintVertical_bias="0.122">
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:backgroundTint="@color/white"
-            app:cardCornerRadius="0dp"
-            app:strokeColor="@color/border"
-            app:strokeWidth="1dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|start"
-                android:layout_marginStart="20dp"
-                android:layout_marginBottom="10dp"
-                android:textSize="8pt"
-                android:fontFamily="@font/montserrat_bold"
-                android:text="Don Quijote de la Mancha"
-                android:textColor="@color/black" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|start"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="10dp"
-                android:textSize="6pt"
-                android:text="30/01/2024"
-                android:textColor="@color/secondary" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|center"
-                android:layout_marginEnd="20dp"
-                android:src="@drawable/arrow" />
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginTop="80dp"
-            android:backgroundTint="@color/white"
-            app:cardCornerRadius="0dp"
-            app:strokeColor="@color/border"
-            app:strokeWidth="1dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|start"
-                android:layout_marginStart="20dp"
-                android:layout_marginBottom="10dp"
-                android:textSize="8pt"
-                android:fontFamily="@font/montserrat_bold"
-                android:text="Probabilidad y Estadistica"
-                android:textColor="@color/black" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|start"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="10dp"
-                android:textSize="6pt"
-                android:text="20/09/2023"
-                android:textColor="@color/secondary" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|center"
-                android:layout_marginEnd="20dp"
-                android:src="@drawable/arrow" />
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginTop="160dp"
-            android:backgroundTint="@color/white"
-            app:cardCornerRadius="0dp"
-            app:strokeColor="@color/border"
-            app:strokeWidth="1dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|start"
-                android:layout_marginStart="20dp"
-                android:layout_marginBottom="10dp"
-                android:fontFamily="@font/montserrat_bold"
-                android:text="Las 12 leyes del liderazgo"
-                android:textSize="8pt"
-                android:textColor="@color/black" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|start"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="10dp"
-                android:textSize="6pt"
-                android:text="30/06/2023"
-                android:textColor="@color/secondary" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|center"
-                android:layout_marginEnd="20dp"
-                android:src="@drawable/arrow" />
-        </com.google.android.material.card.MaterialCardView>
-
-    </androidx.cardview.widget.CardView>
+        app:layout_constraintTop_toBottomOf="@+id/cardView" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

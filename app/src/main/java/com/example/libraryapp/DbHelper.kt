@@ -148,8 +148,16 @@ class DbHelper(private val context: Context) : SQLiteOpenHelper(context, DBNAME,
         val db = readableDatabase
         return db.rawQuery("SELECT id, categoria, nombre, sinopsis, file_path FROM LIBROS WHERE user_id = ? AND id = ?", arrayOf(userId.toString(), libroId.toString()))
     }
-
-
+    fun getBooksByCategory(userId: Long, categoria: String): Cursor? {
+        val db = readableDatabase
+        Log.d("DbHelper", "Consulta SQL: $db, userId: $userId, categoria: $categoria")
+        return db.rawQuery("SELECT * FROM LIBROS WHERE user_id = ? AND categoria = ?", arrayOf(userId.toString(), categoria))
+    }
+    fun getAllBooks(userId: Int): Cursor? {
+        val db = readableDatabase
+        Log.d("DbHelper", "Consulta SQL: $db, userId: $userId")
+        return db.rawQuery("SELECT * FROM LIBROS WHERE user_id = ?", arrayOf(userId.toString()))
+    }
     fun insertLibro(
         categoria: String,
         nombreLibro: String,

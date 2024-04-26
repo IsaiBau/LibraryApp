@@ -27,13 +27,18 @@ class MainActivityDetailBook : AppCompatActivity() {
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, categorias)
         autoCompleteTextView.setAdapter(adapter)
         val usu = (intent.getIntExtra("ID_USUARIO", -1))
+        Log.d("DETAIL", "ID_USUARIO: $usu")
+
         val usu2 = usu.toLong()
         var idL = intent.getLongExtra("LIBRO_ID", -1)
-
+        Log.d("DETAIL", "ID_LIBRO: $idL")
         val buttonDelete = findViewById<ImageButton>(R.id.buttonDelete)
         buttonDelete.setOnClickListener {
             dbHelper.deleteBook(idL)
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java).apply {
+                putExtra("LIBRO_ID", idL)
+                putExtra("ID_USUARIO", usu)
+            }
             startActivity(intent)
             finish()
         }
@@ -62,6 +67,7 @@ class MainActivityDetailBook : AppCompatActivity() {
                 val sinopsis1 = findViewById<TextView>(R.id.sin)
                 val sinopsisL = findViewById<TextView>(R.id.sinopsisL)
                 sinopsisL.text = sinopsis
+                sinopsis1.text = sinopsis
 
             } else {
                 // Manejar el caso en el que las columnas no existen en el cursor
@@ -70,6 +76,7 @@ class MainActivityDetailBook : AppCompatActivity() {
             // Manejar el caso en el que no se encuentre el libro
         }
         cursor?.close()
+
         //EDITAAAAAR
         val edit = findViewById<ImageButton>(R.id.edit)
         edit.setOnClickListener {
@@ -86,9 +93,9 @@ class MainActivityDetailBook : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java).apply {
                 putExtra("LIBRO_ID", idL)
                 putExtra("ID_USUARIO", usu)
-                finish()
             }
             startActivity(intent)
+            finish()
         }
 
         val buttonReturn = findViewById<Button>(R.id.buttonReturn)
