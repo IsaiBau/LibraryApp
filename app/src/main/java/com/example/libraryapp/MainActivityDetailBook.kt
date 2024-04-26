@@ -34,6 +34,7 @@ class MainActivityDetailBook : AppCompatActivity() {
             dbHelper.deleteBook(idL)
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         val cursor = dbHelper.getLibroPorId(usu, idL)
@@ -68,6 +69,26 @@ class MainActivityDetailBook : AppCompatActivity() {
             // Manejar el caso en el que no se encuentre el libro
         }
         cursor?.close()
+        //EDITAAAAAR
+        val edit = findViewById<ImageButton>(R.id.edit)
+        edit.setOnClickListener {
+            val cursor = dbHelper.getLibroPorId(usu, idL)
+            if (cursor != null && cursor.moveToFirst()) {
+                val filePathIndex = cursor.getColumnIndex("file_path")
+                val filePath = cursor.getString(filePathIndex)
+                val uri = Uri.parse(filePath)
+            }
+            val categoria = autoCompleteTextView.text.toString()
+            val nombreLibro = findViewById<TextView>(R.id.nom).text.toString()
+            val sinopsis = findViewById<TextView>(R.id.sinopsisL).text.toString()
+            dbHelper.updateBook(idL, categoria, nombreLibro, sinopsis)
+            val intent = Intent(this, MainActivity::class.java).apply {
+                putExtra("LIBRO_ID", idL)
+                putExtra("ID_USUARIO", usu)
+                finish()
+            }
+            startActivity(intent)
+        }
 
         val buttonReturn = findViewById<Button>(R.id.buttonReturn)
         buttonReturn.setOnClickListener {
@@ -81,6 +102,7 @@ class MainActivityDetailBook : AppCompatActivity() {
                 putExtra("ID_USUARIO", usu)
             }
             startActivity(intent)
+            finish()
         }
     }
 }

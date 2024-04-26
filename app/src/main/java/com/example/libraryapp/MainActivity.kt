@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         dbHelper = DbHelper(this)
         val usu = intent.getIntExtra("ID_USUARIO", -1)
+        val libroID = intent.getIntExtra("LIBRO_ID", -1)
         Log.d("MainActivity", "se pudo: $usu")
         val buttonAdd = findViewById<ImageButton>(R.id.addButton)
         buttonAdd.setOnClickListener {
@@ -28,35 +29,7 @@ class MainActivity : AppCompatActivity() {
             }
             startActivity(intent)
         }
-        val id = usu.toLong()
-        //carview grande donde aparece los añadidos recientemente
-        val cursor = dbHelper.getUltimoLibroAñadidoPorUsuario(id)
-        if (cursor != null && cursor.moveToFirst()) {
-            val idColumnIndex = cursor.getColumnIndex("id")
-            val nombreColumnIndex = cursor.getColumnIndex("nombre")
-            val categoriaColumnIndex = cursor.getColumnIndex("categoria")
-            val sinopsisColumnIndex = cursor.getColumnIndex("sinopsis")
-            if (nombreColumnIndex != -1 && categoriaColumnIndex != -1) {
-                libroId = cursor.getLong(idColumnIndex)
-                val nombreLibro = cursor.getString(nombreColumnIndex)
-                val categoria = cursor.getString(categoriaColumnIndex)
-                val sinopsis = cursor.getString(sinopsisColumnIndex)
-
-                // Ahora puedes mostrar los datos del libro en el CardView
-                val libroTitulo = findViewById<TextView>(R.id.libroTitulo)
-                libroTitulo.text = nombreLibro
-                val sinopsiss= findViewById<TextView>(R.id.sinopsis)
-                sinopsiss.text = sinopsis
-                val buttonCategoria = findViewById<Button>(R.id.buttonCat)
-                buttonCategoria.text = categoria
-            } else {
-                // Manejar el caso en el que las columnas no existen en el cursor
-            }
-        } else {
-            // Maneja el caso en el que no se haya encontrado ningún libro añadido por el usuario en sesión
-        }
-        cursor?.close()
-
+        refreshUl()
         //todos los libros intento
         /*
         val cursor1 = dbHelper.getAllBooks(id)
@@ -120,5 +93,36 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, MainActivityCategories::class.java)
             startActivity(intent)
         }
+    }
+    private fun refreshUl(){
+        val usu = intent.getIntExtra("ID_USUARIO", -1)
+        val id = usu.toLong()
+        //carview grande donde aparece los añadidos recientemente
+        val cursor = dbHelper.getUltimoLibroAñadidoPorUsuario(id)
+        if (cursor != null && cursor.moveToFirst()) {
+            val idColumnIndex = cursor.getColumnIndex("id")
+            val nombreColumnIndex = cursor.getColumnIndex("nombre")
+            val categoriaColumnIndex = cursor.getColumnIndex("categoria")
+            val sinopsisColumnIndex = cursor.getColumnIndex("sinopsis")
+            if (nombreColumnIndex != -1 && categoriaColumnIndex != -1) {
+                libroId = cursor.getLong(idColumnIndex)
+                val nombreLibro = cursor.getString(nombreColumnIndex)
+                val categoria = cursor.getString(categoriaColumnIndex)
+                val sinopsis = cursor.getString(sinopsisColumnIndex)
+
+                // Ahora puedes mostrar los datos del libro en el CardView
+                val libroTitulo = findViewById<TextView>(R.id.libroTitulo)
+                libroTitulo.text = nombreLibro
+                val sinopsiss= findViewById<TextView>(R.id.sinopsis)
+                sinopsiss.text = sinopsis
+                val buttonCategoria = findViewById<Button>(R.id.buttonCat)
+                buttonCategoria.text = categoria
+            } else {
+                // Manejar el caso en el que las columnas no existen en el cursor
+            }
+        } else {
+            // Maneja el caso en el que no se haya encontrado ningún libro añadido por el usuario en sesión
+        }
+        cursor?.close()
     }
 }

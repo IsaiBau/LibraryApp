@@ -123,6 +123,22 @@ class DbHelper(private val context: Context) : SQLiteOpenHelper(context, DBNAME,
             // Aquí puedes mostrar un mensaje de error o realizar alguna otra acción si no se pudo eliminar el libro
         }
     }
+    fun updateBook(libroId: Long, categoria: String, nombreLibro: String, sinopsis: String) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("categoria", categoria)
+            put("nombre", nombreLibro)
+            put("sinopsis", sinopsis)
+        }
+        val updatedRows = db.update("LIBROS", values, "id = ?", arrayOf(libroId.toString()))
+        if (updatedRows > 0) {
+            Log.d("DbHelper", "Libro actualizado exitosamente")
+            // Aquí puedes mostrar un mensaje de éxito o realizar alguna otra acción después de actualizar el libro
+        } else {
+            Log.d("DbHelper", "No se pudo actualizar el libro")
+            // Aquí puedes mostrar un mensaje de error o realizar alguna otra acción si no se pudo actualizar el libro
+        }
+    }
 
     fun getUltimoLibroAñadidoPorUsuario(userId: Long): Cursor? {
         val db = readableDatabase
