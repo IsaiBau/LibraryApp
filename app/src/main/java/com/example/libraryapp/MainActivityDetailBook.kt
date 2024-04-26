@@ -26,7 +26,8 @@ class MainActivityDetailBook : AppCompatActivity() {
         val categorias = listOf("Comedia", "Romance", "Drama", "Acción")
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, categorias)
         autoCompleteTextView.setAdapter(adapter)
-        val usu = (intent.getIntExtra("ID_USUARIO", -1)).toLong()
+        val usu = (intent.getIntExtra("ID_USUARIO", -1))
+        val usu2 = usu.toLong()
         var idL = intent.getLongExtra("LIBRO_ID", -1)
 
         val buttonDelete = findViewById<ImageButton>(R.id.buttonDelete)
@@ -37,7 +38,7 @@ class MainActivityDetailBook : AppCompatActivity() {
             finish()
         }
 
-        val cursor = dbHelper.getLibroPorId(usu, idL)
+        val cursor = dbHelper.getLibroPorId(usu2, idL)
         if (cursor != null && cursor.moveToFirst()) {
             val idColumnIndex = cursor.getColumnIndex("id")
             val filePathIndex = cursor.getColumnIndex("file_path")
@@ -72,7 +73,7 @@ class MainActivityDetailBook : AppCompatActivity() {
         //EDITAAAAAR
         val edit = findViewById<ImageButton>(R.id.edit)
         edit.setOnClickListener {
-            val cursor = dbHelper.getLibroPorId(usu, idL)
+            val cursor = dbHelper.getLibroPorId(usu2, idL)
             if (cursor != null && cursor.moveToFirst()) {
                 val filePathIndex = cursor.getColumnIndex("file_path")
                 val filePath = cursor.getString(filePathIndex)
